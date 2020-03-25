@@ -1,13 +1,52 @@
 body {
-  margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
-    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
-    sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+  background-image: url(./images/bugatti-chiron-sport-110-ans-bugatti.jpg);
+  background-size: cover;
+margin: 0px;
+padding: 0px;
+font-size: 20px;
+font-family: 'Electrolize', sans-serif;
 }
 
 code {
-  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
-    monospace;
+  font-family: 'Aldrich', sans-serif;
+
 }
+div::-webkit-scrollbar{
+  width:5px;
+}
+div::-webkit-scrollbar-thumb{
+  background: red;
+  border-radius: 10%;
+}
+
+@media screen and (max-width:1400px){
+  body{
+    background-image: url(./images/bugatti-chiron-sport-110-ans-bugatti.jpg);
+    background-size: 150%;
+    
+  }
+}
+@media screen and (max-width:1050px){
+  body{
+    background-image: url(./images/bugatti-chiron-sport-110-ans-bugatti.jpg);
+    background-size: 210%;
+    
+  }
+}
+
+@media screen and (max-width:850px){
+  body{
+    background-image: url(./images/bugatti-chiron-sport-110-ans-bugatti.jpg);
+    background-size: 300%;
+  }
+}
+@media screen and (max-width:500px){
+  body{
+    background-image: url(./images/bug.jpg);
+    background-size: auto auto;
+    
+  }
+}
+
+
+
