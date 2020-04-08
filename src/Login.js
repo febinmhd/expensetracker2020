@@ -95,7 +95,7 @@ export default class Login extends Component {
         if(this.state.screen==="about"){
             return (
               <div>
-              <div className="home111">
+              <div className="home111" style={{padding:'0 2vw'}} >
               <button className="button" style={{ fontWeight:'900',background: 'none',margin:'20px 20px', color:'yellow','border-radius': '10%',padding:'2px 5px'}} onClick={()=>this.setState({screen:true})}>Register / Login and get started</button>
           
               <div style={{color:'yellow',fontWeight:'900',fontFamily:'Jura, sans-serif'}} >ABOUT THE PROJECT</div> 

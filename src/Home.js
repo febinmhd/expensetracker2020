@@ -9,6 +9,7 @@ import "react-datepicker/dist/react-datepicker.css";
 import axios from 'axios';
 import * as AmazonCognitoIdentity from "amazon-cognito-identity-js";
 import {Auth} from "aws-amplify";
+import Alert from 'react-bootstrap/Alert'
 
 
 
@@ -53,9 +54,14 @@ export default class Home extends Component {
                   let total=res.total;
                   let day= [date,expensenames,expensevalues,total].slice();
                   await this.setState({monthexpense:[...this.state.monthexpense,day]});
-                  await this.setState({allexpense:expensenames});
-                 await this.setState({expense:expensevalues});
-                 await this.setState({total:total});
+                  console.log(this.state.startDate);
+                  console.log(date);
+     //             await this.setState({startDate: date})
+                  if(this.state.startDate.toString().substr(0, 15)===date.substr(0, 15)){
+                    await this.setState({allexpense:expensenames});
+                  await this.setState({expense:expensevalues});
+                  await this.setState({total:total})}
+                  
                 })
               }
                 await console.log(this.state.monthexpense);  
@@ -96,7 +102,9 @@ export default class Home extends Component {
         condition:null,
         alltotal:null,
         user:null,
-        auth:false
+        auth:false,
+        change:false,
+        show:false
     };
 
     handlechange=async event=>{
@@ -106,6 +114,7 @@ export default class Home extends Component {
 
     addexpense=async event => {
         event.preventDefault();
+       await this.setState({change:true});
            await this.state.newexpense === "" ? this.setState({error:true}) : this.setState({error:false});
            if(this.state.error===false){
             await this.setState({
@@ -122,7 +131,8 @@ export default class Home extends Component {
         
 
     async change (e,index){
-        
+   //   e.preventDefault();
+  //    await this.setState({change:true});
         this.state.expense[index] = e.target.value;
         this.setState({expense:this.state.expense});
         var res=this.state.expense.map(v=>parseFloat(v,10));
@@ -130,11 +140,13 @@ export default class Home extends Component {
           return isNaN(re)===false;
         });
        await this.setState({total:ress.reduce((accumulator,currentValue)=>accumulator+currentValue,0)});
-       await this.setState({resss:ress});   
+       await this.setState({resss:ress});  
+       await this.setState({change:true}); 
     };
 
     async remove(e,index){
         e.preventDefault();
+       await this.setState({change:true});
        await this.state.allexpense.splice(index,1);
        await this.state.expense.splice(index,1);
        await this.setState({expense:this.state.expense, allexpense:this.state.allexpense}); 
@@ -147,27 +159,34 @@ export default class Home extends Component {
     };
 
     
-    handleChangedate =async date => {
-        await this.setState({
-          startDate: date,
-          condition:'false'
-        });
-        console.log(this.state.startDate);
-         await this.state.monthexpense.forEach((day)=>{
-           
-                day[0].substr(0, 15)===this.state.startDate.toString().substr(0, 15) ? 
-                this.setState({allexpense:day[1],expense:day[2],total:day[3],condition:'true'})    
-                : 
-                console.log('no data available')}) 
-                await console.log(this.state.condition);
-                await this.state.condition === 'true' ? await console.log("true true") :  this.setState({allexpense:[],expense:[],total:null})
+    handleChangedate = async date => {
 
-                await console.log(this.state.monthexpense);
-                await console.log(this.state.expense); 
-
-
+        if(this.state.change===true) {
+          console.log('chick on save expenses');
+          this.setState({show:true})
           
-          
+        }
+        
+        else{
+
+          await this.setState({
+            startDate: date,
+            condition:'false'
+          });
+          console.log(this.state.startDate);
+           await this.state.monthexpense.forEach((day)=>{
+             
+                  day[0].substr(0, 15)===this.state.startDate.toString().substr(0, 15) ? 
+                  this.setState({allexpense:day[1],expense:day[2],total:day[3],condition:'true'})    
+                  : 
+                  console.log('no data available')}) 
+                  await console.log(this.state.condition);
+                  await this.state.condition === 'true' ? await console.log("true true") :  this.setState({allexpense:[],expense:[],total:null})
+  
+                  await console.log(this.state.monthexpense);
+                  await console.log(this.state.expense); 
+                //  await this.setState({change:true})
+       }
             };
 
 
@@ -183,7 +202,8 @@ logout = async event=>{
 }
 
   date = async event =>{
-//    event.preventDefault();
+   event.preventDefault();
+ this.setState({change:false})
   let newarray=[];
   let newarray1=[];
   let total1=0;
@@ -294,35 +314,53 @@ logout = async event=>{
         return (
    
 <div>
-<div> {this.state.auth ? <div style={{ display:'flex',flexDirection:"column"}}>
-            <div style={{color:'yellow', textAlign:'center', height:'30vh',paddingTop:'1vh',flex:'1'}}>
-              <div>WELCOME</div>
-              <div style={{fontWeight:'900',fontSize:'5vh'}}>{this.state.user}</div>
+<div> {this.state.auth ? <div style={{ display:'flex',flexDirection:"column",marginTop:'5vh'}}>
+            <div style={{color:'yellow', textAlign:'center',paddingTop:'1vh',display:'flex',alignSelf:'center'}}>
+              <div style={{marginRight:'2vh'}}>WELCOME</div>
+              <div style={{fontWeight:'900',marginRight:'2vh'}}>{this.state.user}</div>
             <div>
             
-            <button className="button" style={{color:'red',borderColor:'black',background:'rgba(0,0,0,0.7)',margin:'5px 8px','border-radius': '10%',padding:'2px 5px'}} onClick={this.logout}>LOGOUT</button>
+            <button className="button" style={{color:'red',borderColor:'black',background:'rgba(0,0,0,0.7)','border-radius': '10%',padding:'2px 5px'}} onClick={this.logout}>LOGOUT</button>
             </div>
 
-            <div className="home" style={{ flex:'3'}}>
-              <h3 className="expense"> Expense Tracker</h3> 
-              <div style={{ display:'flex',flexDirection:"column",alignItems:'center',justifyContent:'space-evenly'}}>
-               <div> Select the date</div>
+            <div className="home">
+              <h3 style={{ color:'yellow', marginBottom:'1vh'}}> Expense Tracker</h3> 
+              <div style={{ display:'flex',flexDirection:"column",alignItems:'center',justifyContent:'space-around'}}>
+               <div className="date"> Select the date</div>
                
-               <div>  <DatePicker 
+               <div className="datepicker">  <DatePicker 
                      selected={this.state.startDate}
                      onChange={this.handleChangedate}
                      />    </div>
-          <div>  <button className="button" style={{ background: 'none',margin:'5px 8px', color:'white','border-radius': '10%',padding:'2px 5px'}} onClick={this.date}>Save expense</button></div>
-          <div style={{color:'yellow', textAlign:'center'}}>Please save expenses before changing the date</div>
+
+
+          <div className="inputexpense">  
+          <button className="button" style={{ background: 'none',color:'white','border-radius': '10%',padding:'2px 5px'}} onClick={this.date}>Save expense</button>
+          </div>
+
+
+         {this.state.change && this.state.show ? 
+         <Alert variant="warning" onClose={() => this.setState({show:false})} dismissible>
+        <Alert.Heading>Save your expense!</Alert.Heading>
+        <p>
+          PLease click on save expenses and save your expense before changing dates
+        </p>
+      </Alert> : null}
+
+
+
               </div>
-              ADD NEW EXPENSE<input className="buttoninput" id="newexpense" name="newexpense" style={{ background: 'none', color:'white','border-radius': '10%', textAlign:'center' }} onChange={this.handlechange}/>
-                            		<button className="button" className="button" style={{ background: 'none',margin:'5px 8px', color:'white','border-radius': '10%',padding:'2px 5px'}} onClick={this.addexpense}> 
+            <div style={{marginBottom:'1vh',marginTop:'1vh'}}>
+            <input className="buttoninput" id="newexpense" placeholder="ADD YOUR EXPENSE" name="newexpense" style={{ background: 'none', color:'white', textAlign:'center',marginTop:'1vh',marginBottom:'1vh' }} onChange={this.handlechange}/>
+              
+            </div>
+                           		<button className="button"  style={{ background: 'none',margin:'2px 8px', color:'white','border-radius': '10%',width:'10vh', height:'6vh'}} onClick={this.addexpense}> 
                             		ADD
                             		</button>
                                     
                                     <div>
                                     <div>
-                          {this.state.error? <div>PLease input your expense</div>: <div></div>}
+                          {this.state.error? <div style={{marginTop:'2vh',marginBottom:'2vh'}}>PLease input your expense</div>: <div></div>}
                           </div>
                           </div>
              <div className="content" style={{ 'overflow-y': 'scroll'}}>
@@ -360,9 +398,9 @@ logout = async event=>{
         
              
              
-              <div className="total">Total Expenses Of The Day:<div className="sum">{this.state.total}  </div>BHD    </div> 
+              <div className="total">Expense Of The Day:<div className="sum">{this.state.total}  </div>BHD    </div> 
 
-              <div className="total">Total Of Everyday Expenses :<div className="sum">{this.state.alltotal}  </div>BHD    </div> 
+              <div className="total">Total Expenses :<div className="sum">{this.state.alltotal}  </div>BHD    </div> 
             </div>
             
             </div>
